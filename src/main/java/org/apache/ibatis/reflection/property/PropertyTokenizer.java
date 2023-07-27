@@ -18,6 +18,15 @@ package org.apache.ibatis.reflection.property;
 import java.util.Iterator;
 
 /**
+ * 对象属性路径的解析器，解析成一个个标记token
+ * 比如student[id].name解析后：
+ *     name="student"
+ *     indexedName="student[id]"
+ *     index="id"
+ *     children="name"
+ * 然后通过next获取下一层时，继续通过Tokenizer解析children字符串
+ * 所以这是一层层路径逐个解析的
+ *
  * @author Clinton Begin
  */
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {

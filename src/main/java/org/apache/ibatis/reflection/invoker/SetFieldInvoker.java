@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * 针对具体属性field进行反射赋值
+ *
  * @author Clinton Begin
  */
 public class SetFieldInvoker implements Invoker {

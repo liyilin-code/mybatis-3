@@ -18,6 +18,8 @@ package org.apache.ibatis.reflection.invoker;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * 调用器接口，用于反射执行target指定方法，或者获取属性信息
+ * 一个Invoker对应一个method或者field
  * @author Clinton Begin
  */
 public interface Invoker {

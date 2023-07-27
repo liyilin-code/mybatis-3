@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * 属性拷贝器，就是把一个源对象srcBean的属性值都赋值给目标对象destBean
+ *
  * @author Clinton Begin
  */
 public final class PropertyCopier {
@@ -28,6 +30,13 @@ public final class PropertyCopier {
     // Prevent Instantiation of Static Class
   }
 
+  /**
+   * 将源对象中所有属性值拷贝到目标对象中
+   *
+   * @param type 待拷贝对象类型
+   * @param sourceBean 源对象
+   * @param destinationBean 目标对象
+   */
   public static void copyBeanProperties(Class<?> type, Object sourceBean, Object destinationBean) {
     Class<?> parent = type;
     while (parent != null) {

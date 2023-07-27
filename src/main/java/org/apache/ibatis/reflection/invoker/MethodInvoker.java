@@ -21,11 +21,15 @@ import java.lang.reflect.Method;
 import org.apache.ibatis.reflection.Reflector;
 
 /**
+ * 具体方法的反射调用执行器
  * @author Clinton Begin
  */
 public class MethodInvoker implements Invoker {
 
   private final Class<?> type;
+  /**
+   * 这个Invoker针对这个method进行调用
+   */
   private final Method method;
 
   public MethodInvoker(Method method) {
