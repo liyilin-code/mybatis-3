@@ -31,6 +31,18 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
+/**
+ * 方法Method对象的参数名解析器，主要解析@Param注解指定属性名
+ *     默认useActualParamName=true，表示用参数名称，否则用参数序列
+ *    1. 比如：aMethod(@Param("M") int a, @Param("N") int b)
+ *        不管useActualParamName如何，指定了@Param就用@Param中作为参数名
+ *        解析后参数索引-参数名称关系 {{0, "M"}, {1, "N"}}
+ *    2. 比如：aMethod(int a, int b)
+ *        useActualParamName=true，解析后：{{0, "a"}, {1, "b"}}
+ *        useActualParamName=false，解析后：{{0, "0"}, {1, "1"}}
+ *    3. 比如：aMethod(int a, RowBounds rb, int b)
+ *        会跳过特殊类型参数RowBounds，解析后：{{0, "0"}, {2, "1"}}
+ */
 public class ParamNameResolver {
 
   public static final String GENERIC_NAME_PREFIX = "param";

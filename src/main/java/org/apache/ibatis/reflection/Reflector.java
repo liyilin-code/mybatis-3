@@ -46,6 +46,10 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
 import org.apache.ibatis.util.MapUtil;
 
 /**
+ * 每个Class专有的反射缓存对象，该对象解析了Class，解析出来的反射对象缓存起来
+ *     提供根据属性名获取对应类的get/set反射对象
+ * 由ReflectorFactory工厂负责生成各类型对应的Reflector对象
+ *
  * This class represents a cached set of class definition information that allows for easy mapping between property
  * names and getter/setter methods.
  *
