@@ -27,6 +27,7 @@ import org.apache.ibatis.reflection.invoker.Invoker;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
+ * 普通JavaBean的包装
  * @author Clinton Begin
  */
 public class BeanWrapper extends BaseWrapper {
