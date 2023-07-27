@@ -85,7 +85,7 @@ class ExternalResourcesTest {
   void testGetConfiguredTemplate() {
     String templateName = "";
 
-    try (FileWriter fileWriter = new FileWriter(tempFile, StandardCharsets.UTF_8)) {
+    try (FileWriter fileWriter = new FileWriter(tempFile)) {
       fileWriter.append("new_command.template=templates/col_new_template_migration.sql");
       fileWriter.flush();
       templateName = ExternalResources.getConfiguredTemplate(tempFile.getAbsolutePath(), "new_command.template");
