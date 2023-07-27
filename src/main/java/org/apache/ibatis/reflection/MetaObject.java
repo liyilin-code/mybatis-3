@@ -28,6 +28,8 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapper;
 import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
+ * 与MetaClass对应，MetaClass提供了查看Class细节的能力，MetaObject提供了查看Object细节的能力
+ *
  * @author Clinton Begin
  */
 public class MetaObject {
@@ -82,34 +84,72 @@ public class MetaObject {
     return originalObject;
   }
 
+  /**
+   * 查看对象中propName对应的属性名，支持连字符转换为驼峰
+   * 最终调用的MetaClass.findProperty
+   */
   public String findProperty(String propName, boolean useCamelCaseMapping) {
     return objectWrapper.findProperty(propName, useCamelCaseMapping);
   }
 
+  /**
+   * 获取属性名，注意如果是JavaBean对象，和MetaClass.getGetterNames一致，返回对象属性名
+   *     但是如果是Map对象，返回的是键名称集合
+   * @return
+   */
   public String[] getGetterNames() {
     return objectWrapper.getGetterNames();
   }
 
+  /**
+   * 和getGetterNames一致
+   * @return
+   */
   public String[] getSetterNames() {
     return objectWrapper.getSetterNames();
   }
 
+  /**
+   * 返回name属性对应的类型
+   * @param name
+   * @return
+   */
   public Class<?> getSetterType(String name) {
     return objectWrapper.getSetterType(name);
   }
 
+  /**
+   * 和getSetterType一致
+   * @param name
+   * @return
+   */
   public Class<?> getGetterType(String name) {
     return objectWrapper.getGetterType(name);
   }
 
+  /**
+   * 是否有name匹配的属性
+   * @param name
+   * @return
+   */
   public boolean hasSetter(String name) {
     return objectWrapper.hasSetter(name);
   }
 
+  /**
+   * 是否有name匹配的属性
+   * @param name
+   * @return
+   */
   public boolean hasGetter(String name) {
     return objectWrapper.hasGetter(name);
   }
 
+  /**
+   * 获取name属性对应的值
+   * @param name
+   * @return
+   */
   public Object getValue(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (!prop.hasNext()) {
@@ -123,6 +163,11 @@ public class MetaObject {
     }
   }
 
+  /**
+   * 设置name属性为value
+   * @param name
+   * @param value
+   */
   public void setValue(String name, Object value) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
