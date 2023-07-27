@@ -23,6 +23,9 @@ import org.apache.ibatis.reflection.ReflectionException;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
+ * Wrapper类其实就是对原始对象的包装，提供了一些查看对象细节的方法
+ *     比如判断对象某个属性类型，设置对象属性值，获取对象属性值等
+ *
  * @author Clinton Begin
  */
 public abstract class BaseWrapper implements ObjectWrapper {
