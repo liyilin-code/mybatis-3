@@ -26,6 +26,7 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
+ * PreparedStatement代理对象，增加日志功能
  * PreparedStatement proxy to add logging.
  *
  * @author Clinton Begin
