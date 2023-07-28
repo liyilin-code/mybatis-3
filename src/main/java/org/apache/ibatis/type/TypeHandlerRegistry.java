@@ -49,6 +49,8 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 类型处理器注册器
+ *     记录了Java类型对应的多个JdbcType及对应处理器TypeHandler
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */

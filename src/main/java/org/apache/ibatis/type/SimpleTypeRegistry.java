@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 简单类型注册器，通过Set记录了已知的所有简单类型，提供是否为简单类型的快速判断
  * @author Clinton Begin
  */
 public class SimpleTypeRegistry {

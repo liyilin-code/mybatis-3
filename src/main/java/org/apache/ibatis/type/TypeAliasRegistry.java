@@ -33,6 +33,8 @@ import org.apache.ibatis.io.ResolverUtil;
 import org.apache.ibatis.io.Resources;
 
 /**
+ * 类型别名注册器
+ *     提供了根据别名快速查询对应类型Class对象的能力，如果找不到会尝试直接加载名称对应的Class
  * @author Clinton Begin
  */
 public class TypeAliasRegistry {
