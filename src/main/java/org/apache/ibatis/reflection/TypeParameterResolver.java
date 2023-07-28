@@ -26,6 +26,9 @@ import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 
 /**
+ * 类型推测器，用于推断属性，返回值，输入参数中泛型的具体类型
+ *     可以参考单元测试 TypeParameterResolverTest 进行跟踪
+ *
  * @author Iwao AVE!
  */
 public class TypeParameterResolver {
@@ -34,16 +37,19 @@ public class TypeParameterResolver {
    * Resolve field type.
    *
    * @param field
-   *          the field
+   *          the field  需要推断的属性
    * @param srcType
-   *          the src type
+   *          the src type  待推断属性在srcType类中的真实类型
    *
    * @return The field type as {@link Type}. If it has type parameters in the declaration,<br>
    *         they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveFieldType(Field field, Type srcType) {
+    // 属性类型，包含泛型信息
     Type fieldType = field.getGenericType();
+    // 属性声明所在的类，因为泛型可能是在子类推断某一个父类定义的属性
     Class<?> declaringClass = field.getDeclaringClass();
+    // 推断类型：fieldType-需要推断的属性类型，srcType-需要推断属性在srcType中真实类型，declaringClass-声明属性的类
     return resolveType(fieldType, srcType, declaringClass);
   }
 
@@ -86,6 +92,13 @@ public class TypeParameterResolver {
     return result;
   }
 
+  /**
+   * 核心方法
+   * @param type
+   * @param srcType
+   * @param declaringClass
+   * @return
+   */
   private static Type resolveType(Type type, Type srcType, Class<?> declaringClass) {
     if (type instanceof TypeVariable) {
       return resolveTypeVar((TypeVariable<?>) type, srcType, declaringClass);
