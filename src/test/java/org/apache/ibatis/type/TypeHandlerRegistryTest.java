@@ -12,7 +12,7 @@
  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
- *//*
+ */
 
 package org.apache.ibatis.type;
 
@@ -48,6 +48,10 @@ class TypeHandlerRegistryTest {
     typeHandlerRegistry = new TypeHandlerRegistry();
   }
 
+  /**
+   * 支持注册Java类型与对应Jdbc类型的类型处理器TypeHandler
+   *     TypeHandler提供了Java类型数据设置为Jdbc类型（设置PreparedStatement），和Jdbc类型获取出Java类型（从ResultSet中获取）的功能
+   */
   @Test
   void shouldRegisterAndRetrieveTypeHandler() {
     TypeHandler<String> stringTypeHandler = typeHandlerRegistry.getTypeHandler(String.class);
@@ -61,7 +65,7 @@ class TypeHandlerRegistryTest {
     assertTrue(typeHandlerRegistry.getUnknownTypeHandler() instanceof UnknownTypeHandler);
   }
 
-  @Test
+  /*@Test
   void shouldRegisterAndRetrieveComplexTypeHandler() {
     TypeHandler<List<URI>> fakeHandler = new TypeHandler<>() {
 
@@ -95,9 +99,9 @@ class TypeHandlerRegistryTest {
 
     typeHandlerRegistry.register(type, fakeHandler);
     assertSame(fakeHandler, typeHandlerRegistry.getTypeHandler(type));
-  }
+  }*/
 
-  @Test
+  /*@Test
   void shouldAutoRegisterAndRetrieveComplexTypeHandler() {
     TypeHandler<List<URI>> fakeHandler = new BaseTypeHandler<>() {
 
@@ -130,8 +134,11 @@ class TypeHandlerRegistryTest {
 
     assertSame(fakeHandler, typeHandlerRegistry.getTypeHandler(new TypeReference<List<URI>>() {
     }));
-  }
+  }*/
 
+  /**
+   * 支持基础数据类型和包装类型分别注册，不会相互影响，比如int和Integer
+   */
   @Test
   void shouldBindHandlersToWrappersAndPrimitivesIndividually() {
     typeHandlerRegistry.register(Integer.class, DateTypeHandler.class);
@@ -142,6 +149,10 @@ class TypeHandlerRegistryTest {
     typeHandlerRegistry.register(Integer.class, IntegerTypeHandler.class);
   }
 
+  /**
+   * 如果注册了父类的处理器，那么子类也可以获取
+   *     比如这边MyDate继承了Date，那么MyDate获取的处理器就是Date的
+   */
   @Test
   void shouldReturnHandlerForSuperclassIfRegistered() {
     class MyDate extends Date {
@@ -150,6 +161,9 @@ class TypeHandlerRegistryTest {
     assertEquals(DateTypeHandler.class, typeHandlerRegistry.getTypeHandler(MyDate.class).getClass());
   }
 
+  /**
+   * 会一直往父类找，一直找到存在的处理器
+   */
   @Test
   void shouldReturnHandlerForSuperSuperclassIfRegistered() {
     class MyDate1 extends Date {
@@ -207,6 +221,13 @@ class TypeHandlerRegistryTest {
     }
   }
 
+  /**
+   * SomeInterfaceTypeHandler有注解 @MappedTypes(SomeInterface.class)
+   *     表示这个处理器用于处理SomeInterface接口的
+   *     SomeClass实现了这个接口，但是不会获取到接口的处理器
+   *     只有Enum类型实现了对应接口，才会获取到接口处理器
+   *         这边SomeEnum实现了SomeInterface接口，就可以获取到接口处理器
+   */
   @Test
   void demoTypeHandlerForSuperInterface() {
     typeHandlerRegistry.register(SomeInterfaceTypeHandler.class);
@@ -252,4 +273,3 @@ class TypeHandlerRegistryTest {
     }
   }
 }
-*/
