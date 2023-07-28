@@ -18,6 +18,9 @@ package org.apache.ibatis.logging;
 import java.lang.reflect.Constructor;
 
 /**
+ * 1. 工厂类类加载时依次尝试各种类型日志，方法就是尝试创建类型对应日志适配器对象
+ * 2. 通过工厂获取日志对象，就是生成一个日志适配器对象，适配器对象构造函数中会通过具体日志框架Factory获取日志对象
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
