@@ -120,6 +120,14 @@ public class ParamNameResolver {
   }
 
   /**
+   * 传入参数列表，返回参数名和参数值的映射关系
+   *     比如当前Resolver对象解析的Method参数信息{{0, "M"}, {1, "N"}}, 表示第一个参数名称M，第二个参数名称N
+   *     参数列表["mValue", "nValue"]
+   *     除了参数名称，还会添加一个param1, param2...对应的参数值
+   *     生成结果{{"M", "mValue"}, {"N", "nValue"}, {"param1", "mValue"}, {"param2", "nValue"}}
+   *
+   *     单个参数且没有@Param注解指定别名，会直接返回这个参数值，不会包装为Map
+   *     但是如果这个参数是List类型，会包装为Map，新增collection和list名称对应的映射关系
    * <p>
    * A single non-special parameter is returned without a name. Multiple parameters are named using the naming rule. In
    * addition to the default names, this method also adds the generic names (param1, param2, ...).
