@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 添加在类上，注册类的别名
+ *     此时TypeAliasRegistry中便可以根据别名匹配到具体类Class
  * The annotation that specify alias name.
  * <p>
  * <b>How to use:</b>
