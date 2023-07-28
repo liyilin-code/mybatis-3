@@ -25,6 +25,11 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
+ * 提供了强大的类型查找功能
+ *     比如找指定包下有没有标注了注定注解的类
+ *     比如找指定包下所有实现了某个指定接口的类
+ *     可以作为工具类在日常开发中使用
+ *
  * <p>
  * ResolverUtil is used to locate classes that are available in the/a class path and meet arbitrary conditions. The two
  * most common conditions are that a class implements/extends another class, or that is it annotated with a specific
