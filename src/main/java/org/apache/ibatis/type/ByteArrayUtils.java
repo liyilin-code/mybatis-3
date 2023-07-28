@@ -16,6 +16,7 @@
 package org.apache.ibatis.type;
 
 /**
+ * 数组类型元素 基础数据类型 <-> 包装类型 相互转换
  * @author Clinton Begin
  */
 class ByteArrayUtils {

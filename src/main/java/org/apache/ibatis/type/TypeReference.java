@@ -19,6 +19,9 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 /**
+ * 所有类型处理器TypeHandler的父类，提供获取当前处理器可以处理的Java类型信息的能力
+ *     比如 class StringTypeHandler extends BaseTypeHandler<String>，尖括号中泛型String就是当前TypeHandler处理的Java类型
+ *
  * References a generic type.
  *
  * @param <T>

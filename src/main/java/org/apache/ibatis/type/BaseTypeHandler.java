@@ -24,6 +24,9 @@ import org.apache.ibatis.executor.result.ResultMapException;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 类型处理器基础模板类
+ *
+ *
  * The base {@link TypeHandler} for references a generic type.
  * <p>
  * Important: Since 3.5.0, This class never call the {@link ResultSet#wasNull()} and {@link CallableStatement#wasNull()}
@@ -110,10 +113,24 @@ public abstract class BaseTypeHandler<T> extends TypeReference<T> implements Typ
     }
   }
 
+  /**
+   * 抽象方法01
+   *     设置索引i的参数值，因为不同Java类型参数，需要调用ps不同设置参数接口，比如ps.setInt, ps.setBigDecimal
+   *     所以这边抽象出来提供不同Java类型实现
+   * @param ps
+   * @param i
+   * @param parameter
+   * @param jdbcType
+   * @throws SQLException
+   */
   public abstract void setNonNullParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType)
       throws SQLException;
 
   /**
+   * 抽象方法02
+   *     获取结果集中columnName名称对应的值，因为不同结果参数的获取调用rs不同获取参数接口，比如rs.getInt, rs.getBigDecimal
+   *     所以这边抽象出来提供不同Java类型实现
+   *
    * Gets the nullable result.
    *
    * @param rs
