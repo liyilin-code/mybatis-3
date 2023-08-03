@@ -41,6 +41,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
+ * XML解析器，初始化时根据传入的参数构造出XML文档对应的Document对象
+ * 提供了一系列XML文档节点解析功能eval*
+ * 封装的XML信息解析器，解析器负责对应XML文档的节点解析
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -52,8 +56,14 @@ public class XPathParser {
   private Properties variables;
   private XPath xpath;
 
+  /**
+   * 构造函数根据xml路径，生成对应文件的Document对象
+   *     后续解析功能evel*都是对该Document信息的解析
+   * @param xml
+   */
   public XPathParser(String xml) {
     commonConstructor(false, null, null);
+    // XML对应的Document对象
     this.document = createDocument(new InputSource(new StringReader(xml)));
   }
 
@@ -142,6 +152,10 @@ public class XPathParser {
 
   public String evalString(Object root, String expression) {
     String result = (String) evaluate(expression, root, XPathConstants.STRING);
+    /**
+     * 如果字符串，负责占位符信息替换为对应属性值
+     * 比如：jdbc:mysql://127.0.0.1:3306/${dbname}
+     */
     return PropertyParser.parse(result, variables);
   }
 
@@ -268,6 +282,7 @@ public class XPathParser {
     this.entityResolver = entityResolver;
     this.variables = variables;
     XPathFactory factory = XPathFactory.newInstance();
+    // 封装了javax.xml.xpath中XPath对象，负责XML节点解析功能
     this.xpath = factory.newXPath();
   }
 

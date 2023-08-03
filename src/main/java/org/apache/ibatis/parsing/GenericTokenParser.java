@@ -16,6 +16,7 @@
 package org.apache.ibatis.parsing;
 
 /**
+ * 通用占位符解析器，解析出占位符中信息，替换为handler处理后的内容
  * @author Clinton Begin
  */
 public class GenericTokenParser {

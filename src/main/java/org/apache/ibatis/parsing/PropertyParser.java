@@ -18,6 +18,8 @@ package org.apache.ibatis.parsing;
 import java.util.Properties;
 
 /**
+ * 属性解析器，用于替换字符串信息中的占位符信息
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -52,8 +54,18 @@ public class PropertyParser {
     // Prevent Instantiation
   }
 
+  /**
+   * 解析占位符，比如Properties存在属性dbname=custDb,传入字符串"localhost:8080/${dbname}"
+   * 解析后内容 "localhost:8080/custDb"
+   * @param string
+   * @param variables
+   * @return
+   */
   public static String parse(String string, Properties variables) {
     VariableTokenHandler handler = new VariableTokenHandler(variables);
+    /**
+     * 通用占位符解析器
+     */
     GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
     return parser.parse(string);
   }
