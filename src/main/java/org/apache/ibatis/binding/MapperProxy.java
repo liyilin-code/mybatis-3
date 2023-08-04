@@ -31,6 +31,10 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.util.MapUtil;
 
 /**
+ * Mapper接口的代理对象，主要功能就是对方法的代理：
+ *     如果不是接口方法，而是默认方法，比如Object对象中方法，接口中default方法，就直接执行，不做代理
+ *     如果是接口方法，创建Method对应的代理对象MapperMethod，交由方法代理对象执行
+ * 所以MapperProxy功能就是创建并缓存具体方法代理对象MapperMethod,并交由方法代理对象执行
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
@@ -83,6 +87,9 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
       }
+      /**
+       * 创建并缓存Mapper接口中方法对应的代理对象，MapperMethod，并交由方法代理对象执行方法操作
+       */
       return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
     } catch (Throwable t) {
       throw ExceptionUtil.unwrapThrowable(t);
