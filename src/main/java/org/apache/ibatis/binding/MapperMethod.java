@@ -39,6 +39,11 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 
 /**
+ * Mapper接口方法执行器，每个方法对应自己的方法执行器
+ *     MapperMethod完成了接口方法 <-> Sql执行节点的映射
+ *     两个内部类：
+ *     SqlCommand记录了当前方法对应Sql节点类型，UPDATE / DELETE / INSERT / SELECT
+ *     MethodSignature记录了当前方法详情，方法返回信息，参数信息等
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
@@ -58,21 +63,26 @@ public class MapperMethod {
     Object result;
     switch (command.getType()) {
       case INSERT: {
+        // 新增
+        // 根据方法详情，获取参数的键值对{参数名ParamName, 参数值}
         Object param = method.convertArgsToSqlCommandParam(args);
         result = rowCountResult(sqlSession.insert(command.getName(), param));
         break;
       }
       case UPDATE: {
+        // 更新
         Object param = method.convertArgsToSqlCommandParam(args);
         result = rowCountResult(sqlSession.update(command.getName(), param));
         break;
       }
       case DELETE: {
+        // 删除
         Object param = method.convertArgsToSqlCommandParam(args);
         result = rowCountResult(sqlSession.delete(command.getName(), param));
         break;
       }
       case SELECT:
+        // 查询
         if (method.returnsVoid() && method.hasResultHandler()) {
           executeWithResultHandler(sqlSession, args);
           result = null;
