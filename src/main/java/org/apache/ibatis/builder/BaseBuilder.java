@@ -29,6 +29,12 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * 提供一些Builder类的工具方法
+ *     *ValueOf: 将值转换为指定类型，比如 booleanValueOf(String value, Boolean defaultValue) 将value转换为Boolean类型
+ *     resolve*: 根据别名等信息，匹配对应枚举对象
+ *     resolveTypeHandler: 根据类型别名，获取对应类型处理器
+ *     createInstance: 根据类型别名，创建类型对象
+ *
  * @author Clinton Begin
  */
 public abstract class BaseBuilder {
