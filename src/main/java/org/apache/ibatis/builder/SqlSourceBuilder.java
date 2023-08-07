@@ -30,6 +30,9 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.type.JdbcType;
 
 /**
+ * 虽然是SqlSourceBuilder，但功能并不是生产各种类型SqlSource
+ * SqlSourceBuilder可以将RawSqlSource和DynamicSqlSource中 "#{}" 替换为 "?"，从而生成对应StaticSqlSource
+ * 理解为解析器或者转化器更合适
  * @author Clinton Begin
  */
 public class SqlSourceBuilder extends BaseBuilder {
