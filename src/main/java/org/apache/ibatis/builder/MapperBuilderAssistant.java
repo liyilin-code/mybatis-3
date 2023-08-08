@@ -144,9 +144,13 @@ public class MapperBuilderAssistant extends BaseBuilder {
     resultMap = applyCurrentNamespace(resultMap, true);
 
     // Class parameterType = parameterMapBuilder.type();
+    // 这边根据parameterType中查看有没有property属性的get方法，方法返回类型就是属性Java类型
+    // 如果是Map或其他情况，采用Object类型
     Class<?> javaTypeClass = resolveParameterJavaType(parameterType, property, javaType, jdbcType);
+    // 如果没有指定TypeHandler就采用空
     TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
 
+    // 如果未显式指定TypeHandler，会根据javaType,jdbcType查询一个TypeHandler
     return new ParameterMapping.Builder(configuration, property, javaTypeClass).jdbcType(jdbcType)
         .resultMapId(resultMap).mode(parameterMode).numericScale(numericScale).typeHandler(typeHandlerInstance).build();
   }

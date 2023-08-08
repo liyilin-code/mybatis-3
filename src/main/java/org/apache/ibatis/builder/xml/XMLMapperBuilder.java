@@ -133,6 +133,9 @@ public class XMLMapperBuilder extends BaseBuilder {
       // 创建当前namespace新缓存对象，Configuration中记录当前namespace和Cache映射关系
       // assist中记录下当前引用缓存的对象Cache，后面构建其他属性会用到
       cacheElement(context.evalNode("cache"));
+      // 解析ParameterMap添加到Configuration中
+      // ParameterMap对象中记录ParameterMapping集合
+      // ParameterMapping对应每一个属性，包含属性类型，类型处理器对象TypeHandler等信息
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       resultMapElements(context.evalNodes("/mapper/resultMap"));
       sqlElement(context.evalNodes("/mapper/sql"));
