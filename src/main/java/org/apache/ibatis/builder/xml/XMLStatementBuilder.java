@@ -35,6 +35,12 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 负责解析单个数据库操作节点select/insert/update/delete
+ *
+ * <select id="selectById" resultType="sample.param.UserDo">
+ *     select * from USER where ID = #{id}
+ * </select>
+ *
  * @author Clinton Begin
  */
 public class XMLStatementBuilder extends BaseBuilder {
@@ -55,15 +61,21 @@ public class XMLStatementBuilder extends BaseBuilder {
     this.requiredDatabaseId = databaseId;
   }
 
+  /**
+   * 解析当前操作节点
+   */
   public void parseStatementNode() {
+    // 操作节点id和指定的databaseId
     String id = context.getStringAttribute("id");
     String databaseId = context.getStringAttribute("databaseId");
 
+    /// 如果databaseId与当前数据库不匹配，直接返回，不需要解析
     if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
       return;
     }
 
     String nodeName = context.getNode().getNodeName();
+    // 读取SQL操作类型 select/update/delete/insert
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
@@ -71,12 +83,28 @@ public class XMLStatementBuilder extends BaseBuilder {
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
     // Include Fragments before parsing
+    // 通过XMLIncludeTransformer转换节点中Include节点
+
+    // <select id="selectByMyId" resultMap="userMap">
+    //    SELECT * FROM USER
+    //    <include refid="byId"/>
+    // </select>
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
+    // 完成Node中<include>节点内容的替换
+    // <select id="selectByMyId" resultMap="userMap">
+    //    SELECT * FROM USER
+    //    AND schoolId = #{schoolId}
+    // </select>
     includeParser.applyIncludes(context.getNode());
 
+    // 参数类型
     String parameterType = context.getStringAttribute("parameterType");
     Class<?> parameterTypeClass = resolveClass(parameterType);
 
+    // 语句类型
+    // 旧版需要指定sql操作节点是否包含动态元素，从而决定创建SqlSource具体类型
+    // 现在默认LanguageDriver可以识别出来，所以不需要指定了
+    // 默认用 XMLLanguageDriver
     String lang = context.getStringAttribute("lang");
     LanguageDriver langDriver = getLanguageDriver(lang);
 
@@ -84,6 +112,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     processSelectKeyNodes(id, parameterTypeClass, langDriver);
 
     // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
+    // 至此节点中<selectKey>和<include>节点已被解析完毕且删除
     KeyGenerator keyGenerator;
     String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
     keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
@@ -95,6 +124,7 @@ public class XMLStatementBuilder extends BaseBuilder {
               ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
     }
 
+    // 读取操作节点一系列配置，生成映射实体MappedStatement
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     StatementType statementType = StatementType
         .valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
@@ -117,6 +147,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     String resultSets = context.getStringAttribute("resultSets");
     boolean dirtySelect = context.getBooleanAttribute("affectData", Boolean.FALSE);
 
+    // 创建MappedStatement，记录到Configuration中
     builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout, parameterMap,
         parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache, resultOrdered,
         keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets, dirtySelect);

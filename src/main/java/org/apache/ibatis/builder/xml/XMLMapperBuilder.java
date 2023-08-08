@@ -140,7 +140,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       // 解析ResultMap
       resultMapElements(context.evalNodes("/mapper/resultMap"));
       // 解析Sql片段
-      // Sql片段记录到当前对象sqlFragments中
+      // Sql片段记录到Configuration对象sqlFragments中
       sqlElement(context.evalNodes("/mapper/sql"));
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
@@ -157,6 +157,10 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     for (XNode context : list) {
+      // 利用XMLStatementBuilder解析操作节点
+      // <select id="selectById" resultType="sample.param.UserDo">
+      //    select * from USER where ID = #{id}
+      // </select>
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context,
           requiredDatabaseId);
       try {

@@ -114,7 +114,7 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
-      // 解析出properties节点下各property的name/value，存放到XPathParser和Configuration中
+      // 解析出properties节点下各property的name/value，存放到XPathParser和Configuration中variables属性
       propertiesElement(root.evalNode("properties"));
       // 解析出settings节点下各setting的name/value，这边校验，setting的name必须在Configuration对象中有对应set方法
       // 比如<setting name="cacheEnabled" value="true"/>，Configuration中存在 setCacheEnabled

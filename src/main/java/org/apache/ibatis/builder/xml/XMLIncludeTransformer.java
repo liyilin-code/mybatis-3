@@ -45,12 +45,34 @@ public class XMLIncludeTransformer {
 
   public void applyIncludes(Node source) {
     Properties variablesContext = new Properties();
+    // 读取全局属性信息
     Properties configurationVariables = configuration.getVariables();
+    // 这边可以用config配置文件中配置的<property>属性
     Optional.ofNullable(configurationVariables).ifPresent(variablesContext::putAll);
     applyIncludes(source, variablesContext, false);
   }
 
   /**
+   * 递归处理Node节点中<include>标签
+   * 1. 找到目标sql片段节点
+   *  <sql id="byId">
+   *      AND schoolId = #{schoolId}
+   *  </sql>
+   *
+   * 2. 替换掉<include>节点
+   * <select id="selectByMyId" resultMap="userMap">
+   *     SELECT * FROM USER
+   *     <sql id="byId">
+   *         AND schoolId = #{schoolId}
+   *     </sql>
+   * </select>
+   *
+   * 3. sql节点中内容拉出来
+   * <select id="selectByMyId" resultMap="userMap">
+   *     SELECT * FROM USER
+   *     AND schoolId = #{schoolId}
+   * </select>
+   *
    * Recursively apply includes through all SQL fragments.
    *
    * @param source
@@ -60,18 +82,44 @@ public class XMLIncludeTransformer {
    */
   private void applyIncludes(Node source, final Properties variablesContext, boolean included) {
     if ("include".equals(source.getNodeName())) {
+      // 1. 获取include引用的sql片段节点
+      // <sql id="byId">
+      //    AND schoolId = #{schoolId}
+      // </sql>
       Node toInclude = findSqlFragment(getStringAttribute(source, "refid"), variablesContext);
+      // include节点也可以定义属性，这边是解析出属性，通过全局属性消除占位符，同时合并为完整的属性列表
       Properties toIncludeContext = getVariablesContext(source, variablesContext);
+      // 递归处理<sql>元素节点中包含的子<include>节点
       applyIncludes(toInclude, toIncludeContext, true);
       if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
         toInclude = source.getOwnerDocument().importNode(toInclude, true);
       }
+      // 2. <include>节点的替换
+      // 原Node节点
+      // <select id="selectByMyId" resultMap="userMap">
+      //    SELECT * FROM USER
+      //    <include refid="byId"/>
+      // </select>
+      // 替换后Node节点
+      // <select id="selectByMyId" resultMap="userMap">
+      //    SELECT * FROM USER
+      //    <sql id="byId">
+      //        AND schoolId = #{schoolId}
+      //    </sql>
+      // </select>
       source.getParentNode().replaceChild(toInclude, source);
+      // 3. <sql>节点内容添加到前面，删除掉<sql>节点
+      // 新Node如下
+      // <select id="selectByMyId" resultMap="userMap">
+      //    SELECT * FROM USER
+      //    AND schoolId = #{schoolId}
+      // </select>
       while (toInclude.hasChildNodes()) {
         toInclude.getParentNode().insertBefore(toInclude.getFirstChild(), toInclude);
       }
       toInclude.getParentNode().removeChild(toInclude);
     } else if (source.getNodeType() == Node.ELEMENT_NODE) {
+      // 元素节点
       if (included && !variablesContext.isEmpty()) {
         // replace variables in attribute values
         NamedNodeMap attributes = source.getAttributes();
@@ -87,6 +135,10 @@ public class XMLIncludeTransformer {
     } else if (included && (source.getNodeType() == Node.TEXT_NODE || source.getNodeType() == Node.CDATA_SECTION_NODE)
         && !variablesContext.isEmpty()) {
       // replace variables in text node
+      // 属性值替换变量
+      // 比如
+      // SELECT * FROM ${tableName}
+      // 全局定义了属性tableName,就会替换掉
       source.setNodeValue(PropertyParser.parse(source.getNodeValue(), variablesContext));
     }
   }
