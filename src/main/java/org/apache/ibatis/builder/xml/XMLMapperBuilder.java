@@ -137,7 +137,10 @@ public class XMLMapperBuilder extends BaseBuilder {
       // ParameterMap对象中记录ParameterMapping集合
       // ParameterMapping对应每一个属性，包含属性类型，类型处理器对象TypeHandler等信息
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
+      // 解析ResultMap
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      // 解析Sql片段
+      // Sql片段记录到当前对象sqlFragments中
       sqlElement(context.evalNodes("/mapper/sql"));
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
