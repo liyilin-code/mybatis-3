@@ -103,6 +103,7 @@ public class MapperAnnotationBuilder {
 
   private final Configuration configuration;
   private final MapperBuilderAssistant assistant;
+  // 当前解析的Mapper接口类
   private final Class<?> type;
 
   public MapperAnnotationBuilder(Configuration configuration, Class<?> type) {
@@ -115,9 +116,12 @@ public class MapperAnnotationBuilder {
   public void parse() {
     String resource = type.toString();
     if (!configuration.isResourceLoaded(resource)) {
+      // 寻找类名对应的resource下是否有xml配置，如果有则解析，这样可以支持注解，xml混合使用
       loadXmlResource();
       configuration.addLoadedResource(resource);
+      // 设置当前命名空间
       assistant.setCurrentNamespace(type.getName());
+      // 处理缓存
       parseCache();
       parseCacheRef();
       for (Method method : type.getMethods()) {
@@ -296,10 +300,13 @@ public class MapperAnnotationBuilder {
   }
 
   void parseStatement(Method method) {
+    // 参数类型，多参数就是Map类型
     final Class<?> parameterTypeClass = getParameterType(method);
+    // 方法上@Lang注解指定的脚本语言驱动
     final LanguageDriver languageDriver = getLanguageDriver(method);
 
     getAnnotationWrapper(method, true, statementAnnotationTypes).ifPresent(statementAnnotation -> {
+      // 根据注解构建不同类型的SqlSource
       final SqlSource sqlSource = buildSqlSource(statementAnnotation.getAnnotation(), parameterTypeClass,
           languageDriver, method);
       final SqlCommandType sqlCommandType = statementAnnotation.getSqlCommandType();
