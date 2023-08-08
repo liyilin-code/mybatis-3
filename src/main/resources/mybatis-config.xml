@@ -2,22 +2,49 @@
 <!DOCTYPE configuration
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-config.dtd">
-<configuration>
+<configuration>  <!-- 解析器XMLConfigBuilder, 解析实体Configuration -->
+  <properties>
+    <property name="jdbc.username" value="root"/>
+    <property name="jdbc.password" value="123456"/>
+  </properties>
+  <settings>
+    <setting name="cacheEnabled" value="true"/>
+  </settings>
+  <typeAliases> <!-- 对应TypeAliasRegistry -->
+    <typeAlias type="sample.param.UserDo" alias="user"/>
+    <package name="sample.param"/> <!-- 这个什么作用？ -->
+  </typeAliases>
+  <typeHandlers> <!-- TypeHandlerRegistry -->
+    <typeHandler handler="sample.handler.TestTypeHandler"/>
+  </typeHandlers>
+  <objectFactory type="sample.factory.TestObjectFactory"> <!-- ObjectFactory -->
+    <property name="" value=""/>
+  </objectFactory>
+  <objectWrapperFactory type="sample.factory.TestObjectWrapperFactory"/> <!-- ObjectWrapperFactory -->
+  <reflectorFactory type="sample.factory.TestReflectFactory"/> <!-- ReflectorFactory -->
+  <plugins>
+    <plugin interceptor="com.github.pagehelper.PageHelper"> <!-- Interceptor -->
+      <property name="dialect" value="mysql"/>
+    </plugin>
+  </plugins>
+
   <environments default="development">
-    <environment id="development">
+    <environment id="development"> <!-- Environment -->
       <transactionManager type="JDBC"/>
-      <dataSource type="POOLED">
+      <dataSource type="POOLED"> <!-- DataSource -->
         <property name="driver" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/test"/>
-        <property name="username" value="root"/>
-        <property name="password" value="123456"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
       </dataSource>
     </environment>
   </environments>
 
+  <databaseIdProvider type="sample.provider.TestDatabaseIdProvider"/> <!-- DatabaseIdProvider -->
+
 
 
   <mappers>
-    <mapper resource="sample/mapper/UserMapper.xml"/>
+    <mapper resource="sample/mapper/UserMapper.xml"/> <!-- XMLMapperBuilder解析 -->
   </mappers>
 </configuration>

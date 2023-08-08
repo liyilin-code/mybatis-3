@@ -2,7 +2,40 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="sample.mapper.UserMapper">
+<mapper namespace="sample.mapper.UserMapper"> <!-- XMLMapperBuilder解析 -->
+  <cache-ref namespace="sample.mapper"/>
+  <cache eviction="FIFO" flushInterval="60000"/>
+  <parameterMap id="userParam01" type="user"> <!-- ParameterMap -->
+    <parameter property="name" javaType="String"/> <!-- ParameterMapping -->
+    <parameter property="schoolName" javaType="String"/> <!-- ParameterMapping -->
+  </parameterMap>
+  <resultMap id="userMapFull" type="sample.param.UserDo"> <!-- ResultMap -->
+    <result property="id" column="id" typeHandler="sample.handler.TestTypeHandler"/> <!-- ResultMapping -->
+    <result property="schoolName" column="id"/> <!-- ResultMapping -->
+  </resultMap>
+  <resultMap id="userMap" type="sample.param.UserDo" autoMapping="false"> <!-- ResultMap -->
+    <result property="id" column="id"/> <!-- ResultMapping -->
+    <result property="name" column="name"/> <!-- ResultMapping -->
+    <discriminator javaType="int" column="sex"> <!-- Discriminator -->
+      <case value="0" resultMap="boyUserMap"/>
+      <case value="1" resultMap="girlUserMap"/>
+    </discriminator>
+  </resultMap>
+
+  <select id="selectByMyId" resultMap="userMap"> <!-- 解析器XMLStatementBuilder,解析实体MappedStatement -->
+    SELECT * FROM USER <!-- 解析器SqlSourceBuilder,解析实体SqlSource -->
+    <include refid="byId"/> <!-- 解析器XMLIncludeTransformer -->
+  </select>
+
+  <select id="selectUsers" resultMap="userMapFull"> <!-- 解析器XMLStatementBuilder,解析实体MappedStatement -->
+    SELECT *  <!-- 解析器SqlSourceBuilder,解析实体SqlSource -->
+    FROM USER
+    WHERE ID IN
+    <foreach item="id" collection="array" open="(" separator="," close=")"> <!-- SqlNode自身解析 -->
+      #{id}
+    </foreach>
+  </select>
+
   <select id="selectById" resultType="sample.param.UserDo">
     select * from USER where ID = #{id}
   </select>
