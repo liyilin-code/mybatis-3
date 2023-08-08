@@ -50,6 +50,9 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 
 /**
+ * XML Mapper文件解析器，用于解析Mapper.xml
+ * 解析出来的ResultMap,Cache最终还是记录到Configuration中，以id <-> ResultMap/Cache 键值对形式记录
+ *
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -97,11 +100,17 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   public void parse() {
     if (!configuration.isResourceLoaded(resource)) {
+      // 解析Mapper资源文件
       configurationElement(parser.evalNode("/mapper"));
       configuration.addLoadedResource(resource);
       bindMapperForNamespace();
     }
 
+    // 三个pending为解决无序依赖问题
+    // 因为解析时是从上往下依次解析的，可能出现解析一个节点时，其引用的节点尚未开始解析
+    // 这种解析失败的情况是暂时的，Mybatis采用的方案是先尝试第一轮解析，记录下解析失败的节点
+    // 之后再进行第二轮解析，处理前一轮失败节点
+    // 因为第一轮解析已经读入了所有节点，所以第二轮解析的依赖总是可以找到的
     parsePendingResultMaps();
     parsePendingCacheRefs();
     parsePendingStatements();
@@ -118,7 +127,11 @@ public class XMLMapperBuilder extends BaseBuilder {
         throw new BuilderException("Mapper's namespace cannot be empty");
       }
       builderAssistant.setCurrentNamespace(namespace);
+      // Configuration中记录当前namespace和引用缓存namespace的映射关系
+      // assist中记录下当前引用缓存的对象Cache，后面构建其他属性会用到
       cacheRefElement(context.evalNode("cache-ref"));
+      // 创建当前namespace新缓存对象，Configuration中记录当前namespace和Cache映射关系
+      // assist中记录下当前引用缓存的对象Cache，后面构建其他属性会用到
       cacheElement(context.evalNode("cache"));
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
       resultMapElements(context.evalNodes("/mapper/resultMap"));

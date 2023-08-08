@@ -22,6 +22,10 @@
     </discriminator>
   </resultMap>
 
+  <sql id="byId">
+    AND schoolId = #{schoolId}
+  </sql>
+
   <select id="selectByMyId" resultMap="userMap"> <!-- 解析器XMLStatementBuilder,解析实体MappedStatement -->
     SELECT * FROM USER <!-- 解析器SqlSourceBuilder,解析实体SqlSource -->
     <include refid="byId"/> <!-- 解析器XMLIncludeTransformer -->
