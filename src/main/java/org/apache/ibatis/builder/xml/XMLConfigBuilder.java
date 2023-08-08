@@ -114,20 +114,40 @@ public class XMLConfigBuilder extends BaseBuilder {
   private void parseConfiguration(XNode root) {
     try {
       // issue #117 read properties first
+      // 解析出properties节点下各property的name/value，存放到XPathParser和Configuration中
       propertiesElement(root.evalNode("properties"));
+      // 解析出settings节点下各setting的name/value，这边校验，setting的name必须在Configuration对象中有对应set方法
+      // 比如<setting name="cacheEnabled" value="true"/>，Configuration中存在 setCacheEnabled
       Properties settings = settingsAsProperties(root.evalNode("settings"));
+      // 根据setting中定义的vfs实现，设置到Configuration中
       loadCustomVfs(settings);
+      // 根据setting中定义的logImpl实现，设置到Configuration中
       loadCustomLogImpl(settings);
+      // 添加类型别名
+      // 两种设定方式
+      // 1. <typeAlias type="sample.param.UserDo" alias="user"/>
+      // 直接设置别名和类型，类上可以添加 @Alias 指定别名
+      // 2. <package name="sample.param"/>
+      // 设置添加指定包下所有类型别名，如果没有指定 @Alias 别名，默认用简单类名作为别名
       typeAliasesElement(root.evalNode("typeAliases"));
+      // 解析插件plugins
+      // 创建各plugin指定的interceptor对象，添加到Configuration对象interceptorChain属性中，构成拦截器链
       pluginElement(root.evalNode("plugins"));
+      // 支持自定义ObjectFactory实现，否则采用默认DefaultObjectFactory
       objectFactoryElement(root.evalNode("objectFactory"));
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
       reflectorFactoryElement(root.evalNode("reflectorFactory"));
+      // 根据settings中的设置，根据对应set方法设置Configuration中属性值
       settingsElement(settings);
       // read it after objectFactory and objectWrapperFactory issue #631
+      // 设置数据库连接信息Environment，只设置id为当前指定的环境信息
+      // 后面看连接池等实现可以看下这边
       environmentsElement(root.evalNode("environments"));
+      // 根据自定义databaseIdProvider，根据当前数据源DataSource中数据库产品名称，确定当前环境的databaseId，设置到Configuration中
       databaseIdProviderElement(root.evalNode("databaseIdProvider"));
+      // 注册自定义类型处理器TypeHandler
       typeHandlerElement(root.evalNode("typeHandlers"));
+      // 解析Mapper映射文件
       mapperElement(root.evalNode("mappers"));
     } catch (Exception e) {
       throw new BuilderException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
@@ -385,6 +405,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       for (XNode child : parent.getChildren()) {
         if ("package".equals(child.getName())) {
           String mapperPackage = child.getStringAttribute("name");
+          // 包下所有接口类添加为Mapper
           configuration.addMappers(mapperPackage);
         } else {
           String resource = child.getStringAttribute("resource");
@@ -393,6 +414,7 @@ public class XMLConfigBuilder extends BaseBuilder {
           if (resource != null && url == null && mapperClass == null) {
             ErrorContext.instance().resource(resource);
             try (InputStream inputStream = Resources.getResourceAsStream(resource)) {
+              // 通过XMLMapperBuilder解析Mapper资源文件Mapper.xml
               XMLMapperBuilder mapperParser = new XMLMapperBuilder(inputStream, configuration, resource,
                   configuration.getSqlFragments());
               mapperParser.parse();

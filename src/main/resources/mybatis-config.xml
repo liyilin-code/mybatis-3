@@ -12,7 +12,7 @@
   </settings>
   <typeAliases> <!-- 对应TypeAliasRegistry -->
     <typeAlias type="sample.param.UserDo" alias="user"/>
-    <package name="sample.param"/> <!-- 这个什么作用？ -->
+    <package name="sample.param"/> <!-- 将包下的所有类都添加到TypeAliasRegistry -->
   </typeAliases>
   <typeHandlers> <!-- TypeHandlerRegistry -->
     <typeHandler handler="sample.handler.TestTypeHandler"/>
@@ -40,9 +40,10 @@
     </environment>
   </environments>
 
-  <databaseIdProvider type="sample.provider.TestDatabaseIdProvider"/> <!-- DatabaseIdProvider -->
-
-
+  <databaseIdProvider type="sample.provider.TestDatabaseIdProvider"> <!-- DatabaseIdProvider -->
+    <property name="Oracle" value="oracle"/>
+    <property name="MySQL" value="mysql"/>
+  </databaseIdProvider>
 
   <mappers>
     <mapper resource="sample/mapper/UserMapper.xml"/> <!-- XMLMapperBuilder解析 -->
