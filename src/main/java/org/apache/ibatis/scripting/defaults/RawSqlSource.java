@@ -26,6 +26,8 @@ import org.apache.ibatis.scripting.xmltags.SqlNode;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 原生Sql语句，非动态Sql语句，只可能含有 #{}，不含动态语句 <if>，和占位符 ${}
+ * 效率高于DynamicSqlSource，因为初始化阶段已经解析好了
  * Static SqlSource. It is faster than {@link DynamicSqlSource} because mappings are calculated during startup.
  *
  * @since 3.2.0

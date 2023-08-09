@@ -21,6 +21,18 @@ import java.util.Map;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 鉴别器解析实体
+ * DefaultResultSetHandler.resolveDiscriminatedResultMap中根据鉴别器，决定ResultSetMap
+ *
+ * <resultMap id="userMap" type="sample.param.UserDo" autoMapping="false">
+ *     <result property="id" column="id"/>
+ *     <result property="name" column="name"/>
+ *     <discriminator javaType="int" column="sex">
+ *       <case value="0" resultMap="boyUserMap"/>
+ *       <case value="1" resultMap="girlUserMap"/>
+ *     </discriminator>
+ *  </resultMap>
+ *
  * @author Clinton Begin
  */
 public class Discriminator {

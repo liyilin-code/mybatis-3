@@ -967,30 +967,56 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   // DISCRIMINATOR
   //
 
+  /**
+   * 根据鉴别器决定ResultMap
+   *
+   * @param rs
+   * @param resultMap
+   * @param columnPrefix
+   * @return
+   * @throws SQLException
+   */
   public ResultMap resolveDiscriminatedResultMap(ResultSet rs, ResultMap resultMap, String columnPrefix)
       throws SQLException {
+    // 已经处理过的鉴别器
     Set<String> pastDiscriminators = new HashSet<>();
     Discriminator discriminator = resultMap.getDiscriminator();
+    // ResultSet中是本次查询结果
+    // 鉴别器的作用就是根据查询结果中信息的不同，映射为不同的结果对象
     while (discriminator != null) {
+      // value为鉴别器判断依据的列数据
       final Object value = getDiscriminatorValue(rs, discriminator, columnPrefix);
+      // 根据当前值，决定属于哪个分支
+      // <case value="0" resultMap="boyUserMap"/>
       final String discriminatedMapId = discriminator.getMapIdFor(String.valueOf(value));
       if (!configuration.hasResultMap(discriminatedMapId)) {
         break;
       }
+      // 找出指定的ResultMap
       resultMap = configuration.getResultMap(discriminatedMapId);
+      // 继续判断有没有鉴别器
       Discriminator lastDiscriminator = discriminator;
       discriminator = resultMap.getDiscriminator();
       if (discriminator == lastDiscriminator || !pastDiscriminators.add(discriminatedMapId)) {
+        // 鉴别器出现了环
         break;
       }
     }
     return resultMap;
   }
 
+  /**
+   * <discriminator javaType="int" column="sex">
+   *     <case value="0" resultMap="boyUserMap"/>
+   *     <case value="1" resultMap="girlUserMap"/>
+   * </discriminator>
+   */
   private Object getDiscriminatorValue(ResultSet rs, Discriminator discriminator, String columnPrefix)
       throws SQLException {
     final ResultMapping resultMapping = discriminator.getResultMapping();
+    // typeHandler负责从ResultSet中取值，和往PreparedStatement中塞值的功能
     final TypeHandler<?> typeHandler = resultMapping.getTypeHandler();
+    // 返回鉴别器指定的列信息
     return typeHandler.getResult(rs, prependPrefix(resultMapping.getColumn(), columnPrefix));
   }
 

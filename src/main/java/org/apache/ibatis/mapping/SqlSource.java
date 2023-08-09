@@ -16,6 +16,10 @@
 package org.apache.ibatis.mapping;
 
 /**
+ * 解析实体接口，对应MappedStatement中的SQL语句
+ * select * from USER where ID = #{id}
+ * 功能：根据用户输入参数，创建传递给数据库的SQL信息
+ *
  * Represents the content of a mapped statement read from an XML file or an annotation. It creates the SQL that will be
  * passed to the database out of the input parameter received from the user.
  *

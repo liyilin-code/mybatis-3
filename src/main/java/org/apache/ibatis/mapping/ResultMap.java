@@ -32,19 +32,34 @@ import org.apache.ibatis.reflection.ParamNameUtil;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * ResultMap的映射实体
+ * <resultMap id="userMapFull" type="sample.param.UserDo">
+ *     <result property="id" column="id" typeHandler="sample.handler.TestTypeHandler"/>
+ *     <result property="schoolName" column="id"/>
+ *  </resultMap>
+ *
  * @author Clinton Begin
  */
 public class ResultMap {
   private Configuration configuration;
 
+  // ResultMap编号
   private String id;
+  // 最终输出结果对应type类型
   private Class<?> type;
+  // XML中<result>列表映射实体列表，所有属性
   private List<ResultMapping> resultMappings;
+  // XML中<id>和<idArg>映射实体列表
   private List<ResultMapping> idResultMappings;
+  // XML中<constructor>映射实体列表
   private List<ResultMapping> constructorResultMappings;
+  // XML中非<constructor>相关属性列表
   private List<ResultMapping> propertyResultMappings;
+  // 所有参与映射的数据库中字段集合
   private Set<String> mappedColumns;
+  // 所有参与映射的Java对象属性集合
   private Set<String> mappedProperties;
+  // 鉴别器
   private Discriminator discriminator;
   private boolean hasNestedResultMaps;
   private boolean hasNestedQueries;

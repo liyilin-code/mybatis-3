@@ -29,6 +29,12 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * MappedStatement是数据库操作节点(select/update/delete/insert)的解析实体
+ * 包含操作节点的所有信息
+ *   <select id="selectById" resultType="sample.param.UserDo">
+ *       select * from USER where ID = #{id}
+ *   </select>
+ *
  * @author Clinton Begin
  */
 public final class MappedStatement {
