@@ -23,6 +23,13 @@ import java.util.stream.Collectors;
 import org.apache.ibatis.builder.BuilderException;
 
 /**
+ * SQL Provider接口，提供了默认方法resolveMethod，查询匹配的Provider方法
+ * @SelectProvider注解可以指定SQL提供者类，当指定的类实现了ProviderMethodResolver接口时，会采用策略决定当前Provider类中哪一个方法用于提供当前Mapper方法的SQL语句
+ * 策略如下：
+ * 1. 找到Provider类中method名与所在Mapper接口方法的名一致
+ * 2. 方法返回类型为String
+ * 所以如果Provider实现了ProviderMethodResolver接口，就不需要指定哪个method来提供SQL语句了
+ *
  * The interface that resolve an SQL provider method via an SQL provider class.
  * <p>
  * This interface need to implements at an SQL provider class and it need to define the default constructor for creating
@@ -53,12 +60,14 @@ public interface ProviderMethodResolver {
    *           Throws when cannot resolve a target method
    */
   default Method resolveMethod(ProviderContext context) {
+    // 1. 当前实现中method名称和所在Mapper方法名称一致
     List<Method> sameNameMethods = Arrays.stream(getClass().getMethods())
         .filter(m -> m.getName().equals(context.getMapperMethod().getName())).collect(Collectors.toList());
     if (sameNameMethods.isEmpty()) {
       throw new BuilderException("Cannot resolve the provider method because '" + context.getMapperMethod().getName()
           + "' not found in SqlProvider '" + getClass().getName() + "'.");
     }
+    // 2. 方法返回类型为String
     List<Method> targetMethods = sameNameMethods.stream()
         .filter(m -> CharSequence.class.isAssignableFrom(m.getReturnType())).collect(Collectors.toList());
     if (targetMethods.size() == 1) {

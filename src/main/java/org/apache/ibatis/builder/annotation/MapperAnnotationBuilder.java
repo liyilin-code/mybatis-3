@@ -125,6 +125,7 @@ public class MapperAnnotationBuilder {
       parseCache();
       parseCacheRef();
       for (Method method : type.getMethods()) {
+        // 遍历当前Mapper接口的所有方法
         if (!canHaveStatement(method)) {
           continue;
         }
@@ -133,6 +134,7 @@ public class MapperAnnotationBuilder {
           parseResultMap(method);
         }
         try {
+          // 解析接口方法上的注解信息
           parseStatement(method);
         } catch (IncompleteElementException e) {
           configuration.addIncompleteMethod(new MethodResolver(this, method));

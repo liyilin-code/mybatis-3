@@ -36,9 +36,12 @@ import org.apache.ibatis.session.Configuration;
 public class ProviderSqlSource implements SqlSource {
 
   private final Configuration configuration;
+  // @*Provider注解上type指定的SQL Provider类型
   private final Class<?> providerType;
   private final LanguageDriver languageDriver;
+  // Mapper接口中含有注解的方法
   private final Method mapperMethod;
+  //
   private final Method providerMethod;
   private final String[] providerMethodArgumentNames;
   private final Class<?>[] providerMethodParameterTypes;
@@ -105,7 +108,13 @@ public class ProviderSqlSource implements SqlSource {
       this.mapperMethod = mapperMethod;
       Lang lang = mapperMethod == null ? null : mapperMethod.getAnnotation(Lang.class);
       this.languageDriver = configuration.getLanguageDriver(lang == null ? null : lang.value());
+      // @*Provider注解上type指定的SQL Provider类型
       this.providerType = getProviderType(configuration, provider, mapperMethod);
+      // 决定SQL Provider类中哪个方法用于提供SQL语句
+      // 决定策略如下：
+      // 1. 如果@*Provider注解上method指定了具体方法，就用指定的方法
+      // 2. 如果注解没有指定method，就看如果Provider类实现了ProviderMethodResolver接口，采用类中方法名和注解所在方法的方法名一致，且返回类型String的方法
+      // 3. 都没有就采用Provider类中名字叫provideSql，且返回类型为String的方法
       candidateProviderMethodName = (String) provider.annotationType().getMethod("method").invoke(provider);
 
       if (candidateProviderMethodName.length() == 0
@@ -156,6 +165,7 @@ public class ProviderSqlSource implements SqlSource {
         candidateProviderContextIndex = i;
       }
     }
+    // SQL Provider方法中有一个参数是ProviderContext类型的
     this.providerContext = candidateProviderContext;
     this.providerContextIndex = candidateProviderContextIndex;
   }
@@ -163,29 +173,43 @@ public class ProviderSqlSource implements SqlSource {
   @Override
   public BoundSql getBoundSql(Object parameterObject) {
     SqlSource sqlSource = createSqlSource(parameterObject);
+    // 3. 调用SqlSource的getBoundSql方法，获取BoundSql对象
     return sqlSource.getBoundSql(parameterObject);
   }
 
+  /**
+   * 1. 调用@*Provider中type指定的类中方法，获取sql字符串
+   * 2. 向languageDriver的createSqlSource方法传入sql字符串等信息，创建SqlSource对象
+   *
+   * @param parameterObject
+   * @return
+   */
   private SqlSource createSqlSource(Object parameterObject) {
     try {
       String sql;
       if (parameterObject instanceof Map) {
+        // 参数是Map
         int bindParameterCount = providerMethodParameterTypes.length - (providerContext == null ? 0 : 1);
         if (bindParameterCount == 1
             && providerMethodParameterTypes[Integer.valueOf(0).equals(providerContextIndex) ? 1 : 0]
                 .isAssignableFrom(parameterObject.getClass())) {
+          // 如果除了Provider方法中除了ProviderContext还有一个参数
+          // 调用@*Provider注解type类中指定的方法，获取sql串
           sql = invokeProviderMethod(extractProviderMethodArguments(parameterObject));
         } else {
           @SuppressWarnings("unchecked")
+          // 调用@*Provider注解type类中指定的方法，获取sql串
           Map<String, Object> params = (Map<String, Object>) parameterObject;
           sql = invokeProviderMethod(extractProviderMethodArguments(params, providerMethodArgumentNames));
         }
       } else
         switch (providerMethodParameterTypes.length) {
           case 0:
+            // 调用@*Provider注解type类中指定的方法无需输入参数
             sql = invokeProviderMethod();
             break;
           case 1:
+            // 调用@*Provider注解type类中指定的方法一个输入参数
             if (providerContext == null) {
               sql = invokeProviderMethod(parameterObject);
             } else {
