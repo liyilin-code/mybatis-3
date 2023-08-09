@@ -27,6 +27,12 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
+ * 根据数据库名称，返回对应的databaseId
+ * <databaseIdProvider type="DB_VENDOR">
+ *     <property name="Oracle" value="oracle"/>
+ *     <property name="MySQL" value="mysql"/>
+ *  </databaseIdProvider>
+ *
  * Vendor DatabaseId provider.
  * <p>
  * It returns database product name as a databaseId. If the user provides a properties it uses it to translate database
