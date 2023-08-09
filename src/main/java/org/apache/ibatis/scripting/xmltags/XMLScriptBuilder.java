@@ -30,6 +30,20 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * 主要作用是生成SqlSource，而SqlSource中包含解析后的sql信息
+ * <select id="selectUsers" resultMap="userMapFull">
+ *     SELECT *
+ *     FROM USER
+ *     WHERE ID IN
+ *     <foreach item="id" collection="array" open="(" separator="," close=")">
+ *       #{id}
+ *     </foreach>
+ *  </select>
+ *  要有解析sql串的能力，需要将XML节点树组装为对应的SQL节点树
+ *
+ *  1. 构建SQL树
+ *  2. 创建SqlSource对象
+ *
  * @author Clinton Begin
  */
 public class XMLScriptBuilder extends BaseBuilder {
