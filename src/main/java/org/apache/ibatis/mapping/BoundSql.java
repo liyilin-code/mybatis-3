@@ -24,6 +24,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 根据用户输入参数，通过SqlSource创建出来的Sql信息，包含sql语句，语句中只会包含占位符'?'，是可以直接给数据库执行的语句；还包含参数，参数用ParameterMapping列表形式记录
  * An actual SQL String got from an {@link SqlSource} after having processed any dynamic content. The SQL may have SQL
  * placeholders "?" and a list (ordered) of a parameter mappings with the additional information for each parameter (at
  * least the property name of the input object to read the value from).

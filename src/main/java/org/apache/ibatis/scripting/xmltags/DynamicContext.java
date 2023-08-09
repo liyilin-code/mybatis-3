@@ -27,6 +27,7 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * sql解析上下文，保存已经解析完成的SQL片段
  * @author Clinton Begin
  */
 public class DynamicContext {
@@ -86,6 +87,7 @@ public class DynamicContext {
 
     @Override
     public Object get(Object key) {
+      // 先从Map查询
       String strKey = (String) key;
       if (super.containsKey(strKey)) {
         return super.get(strKey);
@@ -98,6 +100,7 @@ public class DynamicContext {
       if (fallbackParameterObject && !parameterMetaObject.hasGetter(strKey)) {
         return parameterMetaObject.getOriginalObject();
       }
+      // 尝试从参数对象的属性中获取
       // issue #61 do not modify the context when reading
       return parameterMetaObject.getValue(strKey);
     }

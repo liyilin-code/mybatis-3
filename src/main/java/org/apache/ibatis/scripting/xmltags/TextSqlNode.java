@@ -38,6 +38,12 @@ public class TextSqlNode implements SqlNode {
     this.injectionFilter = injectionFilter;
   }
 
+  /**
+   * 判断Text中是否存在动态元素
+   * 判断方法是看是否有 ${} 占位符
+   *
+   * @return
+   */
   public boolean isDynamic() {
     DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();
     GenericTokenParser parser = createParser(checker);

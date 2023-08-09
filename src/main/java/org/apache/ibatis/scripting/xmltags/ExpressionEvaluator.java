@@ -24,10 +24,19 @@ import java.util.Map;
 import org.apache.ibatis.builder.BuilderException;
 
 /**
+ * 针对OGNL的封装，表达式解析器
  * @author Clinton Begin
  */
 public class ExpressionEvaluator {
 
+  /**
+   * 求真假值
+   * 比如: <if test="name != null"> 中真假的判断
+   *
+   * @param expression
+   * @param parameterObject
+   * @return
+   */
   public boolean evaluateBoolean(String expression, Object parameterObject) {
     Object value = OgnlCache.getValue(expression, parameterObject);
     if (value instanceof Boolean) {
@@ -48,6 +57,10 @@ public class ExpressionEvaluator {
   }
 
   /**
+   * 获取集合迭代器
+   * 比如：<foreach item="id" collection="array" open="(" separator="," close=")">#{id}</foreach>
+   * 会返回collection指定的array元素的迭代器
+   *
    * @since 3.5.9
    */
   public Iterable<?> evaluateIterable(String expression, Object parameterObject, boolean nullable) {
