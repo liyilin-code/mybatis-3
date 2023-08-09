@@ -48,8 +48,21 @@ import org.w3c.dom.NodeList;
  */
 public class XMLScriptBuilder extends BaseBuilder {
 
+  /**
+   * 当前解析的操作节点
+   * <select id="selectUsers" resultMap="userMapFull">
+   *       SELECT *
+   *       FROM USER
+   *       WHERE ID = #{id}
+   * </select>
+   *
+   */
   private final XNode context;
+  // 是否为动态节点
+  // 在构建SQL节点树过程中判断
+  // 根据这个选择SqlSource类型
   private boolean isDynamic;
+  // 输入参数类型，可以不设置
   private final Class<?> parameterType;
   private final Map<String, NodeHandler> nodeHandlerMap = new HashMap<>();
 
@@ -96,6 +109,7 @@ public class XMLScriptBuilder extends BaseBuilder {
         String data = child.getStringBody("");
         TextSqlNode textSqlNode = new TextSqlNode(data);
         if (textSqlNode.isDynamic()) {
+          // sql文本中包含${}占位符，为动态sql
           contents.add(textSqlNode);
           isDynamic = true;
         } else {
