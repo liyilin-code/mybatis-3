@@ -533,6 +533,9 @@ public abstract class AbstractSQL<T> {
     return sb.toString();
   }
 
+  /**
+   * 用于字符串拼接
+   */
   private static class SafeAppendable {
     private final Appendable appendable;
     private boolean empty = true;
@@ -559,6 +562,9 @@ public abstract class AbstractSQL<T> {
 
   }
 
+  /**
+   * 根据信息组装SQL串
+   */
   private static class SQLStatement {
 
     public enum StatementType {
