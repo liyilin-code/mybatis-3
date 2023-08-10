@@ -23,6 +23,16 @@ import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 
 /**
+ * 作用是解决如下场景：
+ * 当5个线程同时查询缓存，发现未命中时，只会有1个线程加载DB数据，添加到缓存中，其他线程阻塞着，等待缓存加载完成后再返回
+ * 避免多个线程同时加载同一个key的缓存值
+ * 实现方案：
+ *     每一个缓存key对应一个lock，查询时先require对应key的锁，如果没有命中，先去加载DB数据，添加到缓存中后，再释放锁
+ *
+ * BlockingCache和SynchronizedCache两个装饰器区别：
+ *     BlockingCache解决多个线程请求，只可以有一个线程加载数据，避免重复加载的问题
+ *     SynchronizedCache是给每一个操作加锁，避免多线程同时往HashMap中添加数据异常
+ *
  * <p>
  * Simple blocking decorator
  * <p>
