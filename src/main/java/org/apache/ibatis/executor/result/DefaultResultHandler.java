@@ -23,6 +23,8 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
 /**
+ * 将DefaultResultContext中结果对象聚合成一个List返回
+ *
  * @author Clinton Begin
  */
 public class DefaultResultHandler implements ResultHandler<Object> {

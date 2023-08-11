@@ -16,6 +16,7 @@
 package org.apache.ibatis.session;
 
 /**
+ * 处理一条结果记录，保存在内部属性列表中
  * @author Clinton Begin
  */
 public interface ResultHandler<T> {

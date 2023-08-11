@@ -69,6 +69,9 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.ibatis.util.MapUtil;
 
 /**
+ * 结果集处理器
+ *
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Iwao AVE!
@@ -362,8 +365,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     ResultSet resultSet = rsw.getResultSet();
     skipRows(resultSet, rowBounds);
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
+      // 通过鉴别器，决定使用哪一个ResultMap
       ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
+      // 拿到一条结果，转化为一个对象
       Object rowValue = getRowValue(rsw, discriminatedResultMap, null);
+      // 将转化后的对象存起来
       storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
     }
   }

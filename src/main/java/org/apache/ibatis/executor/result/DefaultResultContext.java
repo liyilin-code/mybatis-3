@@ -18,12 +18,16 @@ package org.apache.ibatis.executor.result;
 import org.apache.ibatis.session.ResultContext;
 
 /**
+ * 保存一条数据库结果记录
  * @author Clinton Begin
  */
 public class DefaultResultContext<T> implements ResultContext<T> {
 
+  // 结果对象
   private T resultObject;
+  // 当前是第几个结果
   private int resultCount;
+  // 使用结束，结果已经被取走了
   private boolean stopped;
 
   public DefaultResultContext() {

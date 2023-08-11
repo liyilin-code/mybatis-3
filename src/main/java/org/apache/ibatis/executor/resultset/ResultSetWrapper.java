@@ -37,15 +37,36 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.ibatis.type.UnknownTypeHandler;
 
 /**
+ * ResultSet包装类，在ResultSet基础上提供了额外的功能
+ * 比如：获取所有列名，获取所有列类型
  * @author Iwao AVE!
  */
 public class ResultSetWrapper {
 
+  /**
+   * 被装饰的ResultSet对象
+   */
   private final ResultSet resultSet;
+  /**
+   * 类型处理器注册表
+   */
   private final TypeHandlerRegistry typeHandlerRegistry;
+  /**
+   * ResultSet中各列对应的列名
+   */
   private final List<String> columnNames = new ArrayList<>();
+  /**
+   * 各列对应的Java类型列表
+   */
   private final List<String> classNames = new ArrayList<>();
+  /**
+   * 各列对应的jdbc类型列表
+   */
   private final List<JdbcType> jdbcTypes = new ArrayList<>();
+  /**
+   * 列名 - 类型 - 类型处理器 映射表
+   * Map<列名, Map<Java类型, 类型处理器>>
+   */
   private final Map<String, Map<Class<?>, TypeHandler<?>>> typeHandlerMap = new HashMap<>();
   private final Map<String, List<String>> mappedColumnNamesMap = new HashMap<>();
   private final Map<String, List<String>> unMappedColumnNamesMap = new HashMap<>();

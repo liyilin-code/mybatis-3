@@ -25,6 +25,9 @@ import org.apache.ibatis.session.ResultContext;
 import org.apache.ibatis.session.ResultHandler;
 
 /**
+ * 将DefaultResultContext中结果对象聚合成一个Map返回
+ * 可以指定Map的key值，对应结果集中一个属性名，用该属性的属性值作为Map的Key值
+ *
  * @author Clinton Begin
  */
 public class DefaultMapResultHandler<K, V> implements ResultHandler<V> {
