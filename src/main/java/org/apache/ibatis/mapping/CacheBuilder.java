@@ -35,6 +35,10 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 
 /**
+ * 缓存容器建造器
+ * Mybatis针对Cache容器提供了多种装饰器，满足各种功能的增强
+ * 根据用户定义的功能，逐级用装饰器装饰Cache容器实现
+ *
  * @author Clinton Begin
  */
 public class CacheBuilder {
