@@ -25,6 +25,8 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 
 /**
+ * 事务中的产生的数据暂时保存起来，事务提交时一并提交给缓存保存，事务回滚时直接销毁
+ *
  * The 2nd level cache transactional buffer.
  * <p>
  * This class holds all cache entries that are to be added to the 2nd level cache during a Session. Entries are sent to
